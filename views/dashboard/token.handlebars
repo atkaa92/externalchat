@@ -1,0 +1,52 @@
+{{#if user.token}}
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+        <h3 class="text-center mb-3">
+            Use this script under the domain you have registered your token
+        </h3>
+        <div class="card card-body mb-2">
+            <div>
+              function loadScriptForChat(url, callback){<br>
+                &nbsp var script = document.createElement("script")<br>
+                &nbsp script.type = "text/javascript";<br>
+                &nbsp if (script.readyState){<br>
+                  &nbsp&nbsp script.onreadystatechange = function(){<br>
+                    &nbsp&nbsp&nbsp if (script.readyState == "loaded" || script.readyState == "complete"){<br>
+                      &nbsp&nbsp&nbsp&nbsp script.onreadystatechange = null;<br>
+                      &nbsp&nbsp&nbsp&nbsp callback();<br>
+                    &nbsp&nbsp&nbsp }<br>
+                  &nbsp&nbsp };<br>
+                &nbsp } else {<br>
+                  &nbsp&nbsp script.onload = function(){<br>
+                    &nbsp&nbsp&nbsp callback();<br>
+                  &nbsp&nbsp };<br>
+                &nbsp }
+                &nbsp script.src = url;<br>
+                &nbsp document.getElementsByTagName("head")[0].appendChild(script);<br>
+              }<br>
+              loadScriptForChat("http://127.0.0.1:5000/external/socket.js", function(){<br>
+                &nbsp initChat('{{ user.token }}')<br>
+              });<br>
+            </div>
+       </div>
+    </div>
+  </div>
+{{else}}
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card card-body">
+            <h3 class="text-center">
+                Register Token
+            </h3>
+            <form action="/dashboard/token?_method=PUT" method="post">
+                <div class="form-group">
+                    <label for="domain">Domain</label>
+                    <input type="text" name="domain" class="form-control" required>
+                </div>
+                <input type="hidden" name="_method" value="PUT">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+       </div>
+    </div>
+  </div>
+{{/if}}

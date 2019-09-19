@@ -1,0 +1,78 @@
+<div data-token="{{ token }}" class="row adminPanelChat">
+    <div class="col-4 costomizeNavTabParent p-1">
+        <ul class="costomizeNavTab userListPart nav nav-tabs"></ul>
+    </div>
+    <div class="col-8 userMessagePartParent p-1">
+        <div class="tab-content userMessagePart"></div>
+    </div>
+</div>
+
+<script>      
+    var token = $('.adminPanelChat').attr('data-token');
+    var chat = io('http://127.0.0.1:5000/chat?token='+ token);
+
+    chat.on('usersList', function (data) {
+        let alredyExists = {}
+        $.each($('.singleUserListItem'), function (index, value) { 
+            let id = $(this).attr('id')
+            alredyExists[id] = id 
+        });
+        $.each(data.allLoginUsers, function (k, v) {
+            if(alredyExists[k] != v.id && data.thisId != v.id && v.role != 'admin' && v.name != 'User'){
+                $('.userListPart').prepend(`
+                        <li class="nav-item">
+                            <a onclick="resetMsgCount(this)" class="nav-link ${v.id}" data-toggle="tab" href="#${v.id}">${v.name} <b><span class="msgCount"></span></b></a>
+                        </li>
+                `)
+                $('.userMessagePart').prepend(`
+                    <div id="${v.id}" class="singleUserListItem container tab-pane">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control messageInput">
+                            <div class="input-group-append">
+                                <button class="btn btn-dark sendUserMsg" type="submit">Send</button>
+                            </div>
+                        </div>
+                        <div class="singleUserMsgList"></div>
+                    </div>
+                `)
+            }
+        })
+    });
+
+    $(document).on('keypress', '.messageInput',  function(e){
+        if(e.which == 13){
+            var message = $(this).val();
+            var chatroom = $(this).closest('.singleUserListItem').attr('id')
+            $('#' + chatroom).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
+            $('#' + chatroom).find('input').val('')
+            chat.emit('chatToUser', { message: message, chatroom: chatroom });
+        }
+    });
+
+    $(document).on('click', '.sendUserMsg',  function(e){
+        var input = $(this).closest('.input-group').find('input')
+        var message = $(input).val();
+        var chatroom = $(this).closest('.singleUserListItem').attr('id')
+        $('#' + chatroom).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
+        $('#' + chatroom).find('input').val('')
+        chat.emit('chatToUser', { message: message, chatroom: chatroom });
+    });
+
+    chat.on('someoneDisconected', function (data) {
+        $('#' + data).remove()
+        $('.' + data).remove()
+    });
+    
+    chat.on('chatToAdmin', function (data) {
+        $('#' + data.chatroom).find('.singleUserMsgList').prepend(`<p><b>${data.name}</b>: ${data.message} </p>`);
+        if(!$('.' + data.chatroom).hasClass('show')){
+            var oldCount = $('.' + data.chatroom).find('.msgCount').text()
+            $('.' + data.chatroom).find('.msgCount').text(1 + Number(oldCount))
+        }
+    });
+        
+    function resetMsgCount(obj){
+        $(obj).find('.msgCount').text('')
+    }
+
+</script>

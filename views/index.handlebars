@@ -1,0 +1,12 @@
+<div class="jumbotron text-center">
+    <h1>Welcome</h1>
+    {{#if user}}
+        <p class="lead"> Admin chat dashboard</p>
+        <a class="btn btn-dark bnt-lg" href="/dashboard/admin"> Go</a>
+    {{else}}
+        <p class="lead"> Get your token to use our chat</p>
+        <a class="btn btn-dark bnt-lg" href="/users/register"> Get Token</a>
+    {{/if}}
+</div>
+
+   

@@ -1,0 +1,65 @@
+.chatcontent .my-well{
+  outline: 1px solid #212529;
+  box-shadow: 0 0 0 0.2rem rgba(0,0,0,.5);
+  border-radius: .25rem;
+  margin-bottom: 6px;
+  padding: 3px;  
+}
+.chatcontent button{
+  width: 100%;
+}
+.chatcontent{
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  width: 400px;
+}
+.chatcontent .output{
+  max-height: 250px;
+  overflow-y: scroll;
+}
+.chatcontent .chatbox{
+  display: none;
+}
+.my-btn-dark {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  cursor: pointer;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.my-form-control{
+  display: block;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  box-sizing: border-box;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 1px;
+  width:100%;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+#notReadAdminMessageCount{
+  color: #bd2130;
+  font-weight : bold;
+}
