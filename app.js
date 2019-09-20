@@ -84,6 +84,17 @@ app.get('/about', (req, res) => {
     res.render('about')
 })
 
+require('../models/Token');
+const Token = mongoose.model('tokens')
+
+app.get('/alo/:token', (req, res) => {
+    var token = req.params.token;
+    Token.findOne({ token: token })
+            .then(tokken => {
+                res.render('alo', {tokken : tokken})
+            })
+})
+
 //use routes
 app.use('/users', users);
 app.use('/dashboard', dashboard);
