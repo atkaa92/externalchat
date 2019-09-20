@@ -21,7 +21,7 @@ require('./config/passport')(passport);
 const globconst = require('./config/globconst');
 
 //connect to mongoose
-mongoose.connect(globconst.mongoURI, {useUnifiedTopology: true, useNewUrlParser: true})
+mongoose.connect(globconst.mongoURI, {useNewUrlParser: true})
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
