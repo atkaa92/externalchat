@@ -30,8 +30,8 @@ module.exports = (function (io) {
                     .then(tokken => {
                         var pointDomain = typeof socket.handshake.headers.referer != 'undefined' ? socket.handshake.headers.referer : null;
                         var registeredDomain = tokken.domain;
-                        if (true  || pointDomain) {
-                            if(true  || pointDomain.indexOf(registeredDomain) !== -1 ){
+                        if (pointDomain) {
+                            if(pointDomain.indexOf(registeredDomain) !== -1 ){
                                 allLoginUsers[socket.client.id]['name'] = name;
                                 clients = io.of('/chat').clients();
                                 conClients = clients.connected

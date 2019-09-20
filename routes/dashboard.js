@@ -63,7 +63,6 @@ router.put('/token', (req, res) => {
                             new Token(newToken)
                                 .save()
                                 .then(token => {
-                                    console.log(token);
                                     req.flash('success_msg', 'Token has been genereted');
                                     res.redirect('/dashboard/token');
                                 })
