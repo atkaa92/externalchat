@@ -87,9 +87,8 @@ app.get('/about', (req, res) => {
 require('../models/Token');
 const Token = mongoose.model('tokens')
 
-app.get('/alo/:token', (req, res) => {
-    var token = req.params.token;
-    Token.findOne({ token: token })
+app.get('/alo', (req, res) => {
+    Token.findOne({ _id: '5d8498de52fd2700179f20bf' })
             .then(tokken => {
                 res.render('alo', {tokken : tokken})
             })
