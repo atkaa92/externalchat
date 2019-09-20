@@ -9,7 +9,7 @@ function initChat(token, uri) {
   document.head.appendChild(importedcss);
 
   window.onload = function(e){ 
-    var mainDiv = `<div class="chatcontent">
+    var mainDiv = `<div id="chatcontent" class="chatcontent">
         <div class="chatbox">
           <div id="myChat" class="my-well">
               <div class="output"></div>
@@ -21,9 +21,13 @@ function initChat(token, uri) {
           <button type="button" onclick="toggleElement()" class="my-btn-dark userMsgBtn">Live chat<span id="notReadAdminMessageCount"></span></button>
         </div>
         <div class="namebox">
-          <input type="text" class="my-form-control userName" placeholder="Name" onkeypress="setUsernameInput(event)">
-          <button class="my-btn-dark startChat" onclick="setUsername()">Enter your name to start chat</button>
+        <div>
+            <input type="text" class="my-form-control userName" placeholder="Name" onkeypress="setUsernameInput(event)">
+            <button class="my-btn-dark hideChat" onclick="hideChat()">Hide</button>
+            <button class="my-btn-dark startChat" onclick="setUsername()">Start</button>
+          </div>
         </div>
+        <button class="my-btn-dark showChat" onclick="showChat()">Chat</button>
       </div>`;
 
     document.querySelector('body').insertAdjacentHTML("beforeend", mainDiv);
@@ -82,25 +86,47 @@ function setUsernameInput(e) {
   if(e.which == 13){
     var name  = document.querySelector('.userName').value;
     chat.emit('setusername', name);
+    namebox = document.querySelector(".namebox");
+    namebox.style.display = "none";
   }
 }
 
 function setUsername() {
   var name  = document.querySelector('.userName').value;
   chat.emit('setusername', name);
+  namebox = document.querySelector(".namebox");
+  namebox.style.display = "none";
 }
 
 function toggleElement() {
   var x = document.getElementById("myChat");
+  var y = document.getElementById("chatcontent");
   if (x.style.display === "none") {
     x.style.display = "block";
+    y.style.width = "400px";
     document.getElementById("notReadAdminMessageCount").innerText = '';
   }else{
     x.style.display = "none";
+    y.style.width = "100px";
+
   }
 }
 
 function removeMustBeRemoved() {
   var elem = document.querySelector('.mustberemoved');
   if (elem) elem.parentNode.removeChild(elem);
+}
+
+function showChat() {
+  namebox = document.querySelector(".namebox");
+  namebox.style.display = "block";
+  namebox = document.querySelector(".showChat");
+  namebox.style.display = "none";
+}
+
+function hideChat() {
+  namebox = document.querySelector(".namebox");
+  namebox.style.display = "none";
+  namebox = document.querySelector(".showChat");
+  namebox.style.display = "block";
 }
