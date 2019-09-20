@@ -85,6 +85,7 @@ function chatToAdminBtn() {
 function setUsernameInput(e) {
   if(e.which == 13){
     var name  = document.querySelector('.userName').value;
+    name  = name != '' ? name : 'Guest';
     chat.emit('setusername', name);
     namebox = document.querySelector(".namebox");
     namebox.style.display = "none";
@@ -93,6 +94,7 @@ function setUsernameInput(e) {
 
 function setUsername() {
   var name  = document.querySelector('.userName').value;
+  name  = name != '' ? name : 'Guest';
   chat.emit('setusername', name);
   namebox = document.querySelector(".namebox");
   namebox.style.display = "none";
