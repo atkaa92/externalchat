@@ -1,4 +1,4 @@
-<div data-token="{{ token }}" class="row adminPanelChat">
+<div data-token="{{ token }}" data-uri="{{ uri }}" class="row adminPanelChat">
     <div class="col-4 costomizeNavTabParent p-1">
         <ul class="costomizeNavTab userListPart nav nav-tabs"></ul>
     </div>
@@ -9,7 +9,8 @@
 
 <script>      
     var token = $('.adminPanelChat').attr('data-token');
-    var chat = io('http://127.0.0.1:5000/chat?token='+ token);
+    var uri = $('.adminPanelChat').attr('data-uri');
+    var chat = io(uri+'/chat?token='+ token);
 
     chat.on('usersList', function (data) {
         let alredyExists = {}

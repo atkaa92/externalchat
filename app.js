@@ -17,11 +17,11 @@ const dashboard = require('./routes/dashboard');
 //passport Config
 require('./config/passport')(passport);
 
-//database config
-const db = require('./config/database');
+//glob constatnts
+const globconst = require('./config/globconst');
 
 //connect to mongoose
-mongoose.connect(db.mongoURI, {useUnifiedTopology: true, useNewUrlParser: true})
+mongoose.connect(globconst.mongoURI, {useUnifiedTopology: true, useNewUrlParser: true})
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 

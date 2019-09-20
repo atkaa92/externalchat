@@ -1,11 +1,11 @@
-function initChat(token) {
+function initChat(token, uri) {
   var importedjs = document.createElement('script');
-  importedjs.src = 'http://localhost:5000/js/socket.js';
+  importedjs.src = uri+'/js/socket.js';
   document.head.appendChild(importedjs);
 
   var importedcss = document.createElement("link");
   importedcss.rel = "stylesheet";
-  importedcss.href = 'http://localhost:5000/css/socket.css';
+  importedcss.href = uri+'/css/socket.css';
   document.head.appendChild(importedcss);
 
   window.onload = function(e){ 

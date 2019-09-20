@@ -24,8 +24,8 @@
                 &nbsp script.src = url;<br>
                 &nbsp document.getElementsByTagName("head")[0].appendChild(script);<br>
               }<br>
-              loadScriptForChat("http://127.0.0.1:5000/external/socket.js", function(){<br>
-                &nbsp initChat('{{ user.token }}')<br>
+              loadScriptForChat("{{ uri }}/external/socket.js", function(){<br>
+                &nbsp initChat('{{ token }}', '{{ uri }}')<br>
               });<br>
             </div>
        </div>

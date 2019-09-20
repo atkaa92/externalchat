@@ -5,6 +5,9 @@ const passport = require('passport');
 const router = express.Router();
 const {ensureAuthenticaed} = require('../helpers/auth')
 
+//glob constatnts
+const globconst = require('../config/globconst');
+
 //load modals
 require('../models/User');
 const User = mongoose.model('users')
@@ -21,13 +24,12 @@ router.get('/admin', ensureAuthenticaed, (req, res) => {
         req.flash('error_msg', 'You need to register token under your domain to use chat dashboard');
         res.redirect('/dashboard/token')
     }else{
-        res.render('dashboard/admin', {token : token})
+        res.render('dashboard/admin', {token : token, uri : globconst.socketURI})
     }
 })
 
 router.get('/token', ensureAuthenticaed, (req, res) => {
-    var token = req.user.token;
-    res.render('dashboard/token', {token : token})
+    res.render('dashboard/token', {token : req.user.token, uri : globconst.socketURI})
 })
 
 router.put('/token', (req, res) => {
