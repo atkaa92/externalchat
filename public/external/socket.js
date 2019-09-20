@@ -109,7 +109,7 @@ function toggleElement() {
     document.getElementById("notReadAdminMessageCount").innerText = '';
   }else{
     x.style.display = "none";
-    y.style.width = "100px";
+    y.style.width = "110px";
 
   }
 }
