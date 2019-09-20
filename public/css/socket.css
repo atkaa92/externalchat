@@ -1,3 +1,6 @@
+.chatcontent {
+  all: initial;
+}
 .chatcontent .my-well{
   outline: 1px solid #212529;
   box-shadow: 0 0 0 0.2rem rgba(0,0,0,.5);
@@ -62,4 +65,28 @@
 #notReadAdminMessageCount{
   color: #bd2130;
   font-weight : bold;
+}
+.minimizeChat {
+  position: absolute;
+  right: 26px;
+  top: -1px;
+  cursor: pointer;
+  height: 4px;
+  width: 20px;
+  background: #343a40;
+  text-align: center;
+  color: #fff;
+  border-radius: 5px;
+  padding-bottom: 16px;
+  vertical-align: middle;
+  font-weight: bold;
+}
+.messageInputUser{
+  width: 74%;
+  padding-top: 4px;
+  display: inline-block;
+}
+.messageBtnUser{
+  width: 20%!important;
+  display: inline-block;
 }

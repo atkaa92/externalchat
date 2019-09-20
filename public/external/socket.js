@@ -13,7 +13,10 @@ function initChat(token, uri) {
         <div class="chatbox">
           <div id="myChat" class="my-well">
               <div class="output"></div>
-              <input type="text" class="mt-1 my-form-control messageInputUser" onkeypress="chatToAdmin(event)">
+              <div>
+                <input type="text" class="mt-1 my-form-control messageInputUser" onkeypress="chatToAdmin(event)">
+                <button type="button" onclick="chatToAdminBtn()" class="my-btn-dark messageBtnUser">Send</button>
+              </div>
           </div>
           <button type="button" onclick="toggleElement()" class="my-btn-dark userMsgBtn">Live chat<span id="notReadAdminMessageCount"></span></button>
         </div>
@@ -35,7 +38,7 @@ function initChat(token, uri) {
       if(newUser.isAdminConnected){
         output.insertAdjacentHTML("beforeend",` <p><b>Admin</b>: Hey ${newUser.name}. Can I help you?</p>`);
       }else{
-        output.insertAdjacentHTML("beforeend",` <p><b>Admin</b>: Hey ${newUser.name}. We dont have admin online for now. Stay around and we will catch you as soon as possible, or just try to connect later.</p>`);
+        output.insertAdjacentHTML("beforeend",` <p class="mustberemoved"><b>Admin</b>: Hey ${newUser.name}. We dont have admin online for now. Stay around and we will catch you as soon as possible, or just try to connect later.</p>`);
       }
       namebox.style.display = "none";
       chatbox.style.display = "block";
@@ -43,6 +46,7 @@ function initChat(token, uri) {
     });
       
     chat.on('adminChatToUser', function (data) {
+      removeMustBeRemoved()
       output.insertAdjacentHTML("beforeend",` <p><b>Admin</b>: ${data.message} </p>`);
       output.scrollTop = 99999999;
       var x = document.getElementById("myChat");
@@ -65,6 +69,15 @@ function chatToAdmin(e) {
   }
 }
 
+function chatToAdminBtn() {
+  var name =  document.querySelector('.userMsgBtn').getAttribute('data-name');
+  var message =  document.querySelector('.messageInputUser').value;
+  output.insertAdjacentHTML("beforeend",`<p><b>${name}</b>: ${message} </p>`);
+  messageInputUser.value = '';
+  chat.emit('chatToAdmin', { message: message, });
+  output.scrollTop = 99999999;
+}
+
 function setUsernameInput(e) {
   if(e.which == 13){
     var name  = document.querySelector('.userName').value;
@@ -85,4 +98,9 @@ function toggleElement() {
   }else{
     x.style.display = "none";
   }
+}
+
+function removeMustBeRemoved() {
+  var elem = document.querySelector('.mustberemoved');
+  if (elem) elem.parentNode.removeChild(elem);
 }
