@@ -18,8 +18,9 @@
             let id = $(this).attr('id')
             alredyExists[id] = id 
         });
+        console.log(data.allLoginUsers)
         $.each(data.allLoginUsers, function (k, v) {
-            if(alredyExists[k] != v.id && data.thisId != v.id && v.role != 'admin' && v.name != 'User'){
+            if(alredyExists[k] != v.id && data.thisId != v.id && v.role != 'admin' /*&& v.name != 'User'*/){
                 $('.userListPart').prepend(`
                         <li class="nav-item">
                             <a onclick="resetMsgCount(this)" class="nav-link ${v.id}" data-toggle="tab" href="#${v.id}">${v.name} <b><span class="msgCount"></span></b></a>

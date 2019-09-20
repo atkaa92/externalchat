@@ -84,16 +84,6 @@ app.get('/about', (req, res) => {
     res.render('about')
 })
 
-require('../models/Token');
-const Token = mongoose.model('tokens')
-
-app.get('/alo', (req, res) => {
-    Token.findOne({ _id: '5d8498de52fd2700179f20bf' })
-            .then(tokken => {
-                res.render('alo', {tokken : tokken})
-            })
-})
-
 //use routes
 app.use('/users', users);
 app.use('/dashboard', dashboard);
