@@ -36,7 +36,7 @@ function initChat(token, uri) {
     namebox = document.querySelector(".namebox");
     userMsgBtn = document.querySelector(".userMsgBtn");
     messageInputUser = document.querySelector(".messageInputUser");
-    chat = io(`${uri}/chat?token=${token}`);
+    chat = io(`${uri}/chat?token=${token}`, {forceNew: true});
     
     chat.on('enterUser', function (newUser) {
       if(newUser.isAdminConnected){
