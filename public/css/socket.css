@@ -1,5 +1,6 @@
 .chatcontent {
   all: initial;
+  box-sizing: border-box!important;
 }
 .chatcontent .my-well{
   outline: 1px solid #212529;
@@ -55,7 +56,7 @@
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: .25rem;
-  box-sizing: border-box;
+  box-sizing: border-box!important;
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 1px;
@@ -112,4 +113,5 @@
 }
 .namebox{
   display: none;
+  box-sizing: border-box!important;
 }
