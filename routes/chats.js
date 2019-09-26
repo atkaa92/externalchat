@@ -29,7 +29,7 @@ module.exports = (function (io) {
         allLoginUsers[token][socket.client.id] = newUser;
         allLoginUsers[socket.client.id] = newUser;
         if (guest_id  != 'admin') {
-            if (typeof allLoginUsers['guests'][guest_id] == 'undefined' || allLoginUsers['guests'][guest_id]['name'] == 'Myuser') {
+                if (typeof allLoginUsers['guests'][guest_id] == 'undefined' || allLoginUsers['guests'][guest_id]['name'] == 'Myuser') {
                     if (typeof allLoginUsers['guests'][guest_id] == 'undefined') {
                         allLoginUsers['guests'][guest_id] = {
                             role : role, 
@@ -41,6 +41,7 @@ module.exports = (function (io) {
                     }else{
                         allLoginUsers['guests'][guest_id]['clients'].push(socket.client.id);
                     }
+                    socket.emit('activateChatBtn'); 
                 }else{
                     if (allLoginUsers['guests'][guest_id]['name'] != 'Myuser') {
                         let name = allLoginUsers['guests'][guest_id]['name'];

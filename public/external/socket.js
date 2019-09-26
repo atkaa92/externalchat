@@ -37,6 +37,11 @@ function initChat(token, uri) {
     var guestId = getChatGuestId();
     chat = io(`${uri}/chat?token=${token}&guest_id=${guestId}`, {forceNew: true});
     
+    chat.on('activateChatBtn', function (data) {
+      namebox = document.querySelector(".showChat");
+      namebox.style.display = "inline-block";
+    });
+    
     chat.on('enterUser', function (data) {
       if(true){
         output.insertAdjacentHTML("beforeend",` <p><b>Admin</b>: Hey ${data.name}. Can I help you?</p>`);
