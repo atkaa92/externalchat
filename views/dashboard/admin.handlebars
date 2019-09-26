@@ -52,7 +52,7 @@
         if(e.which == 13){
             var message = $(this).val();
             var guestId = $(this).closest('.singleUserListItem').attr('id')
-            $('#' + guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
+            $('#' + guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} <i class="fz10"> (${formatMsgDate(new Date())})</i></p>`);
             $('#' + guestId).find('input').val('')
             chat.emit('chatToUser', { message: message, guestId: guestId });
         }
@@ -62,7 +62,7 @@
         var input = $(this).closest('.input-group').find('input')
         var message = $(input).val();
         var guestId = $(this).closest('.singleUserListItem').attr('id')
-        $('#' + guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
+        $('#' + guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} <i class="fz10"> (${formatMsgDate(new Date())})</i></p>`);
         $('#' + guestId).find('input').val('')
         chat.emit('chatToUser', { message: message, guestId: guestId });
     });
@@ -96,7 +96,7 @@
     });
 
     chat.on('anotherAdminMessage', function (data) {
-         $('#' + data.guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${data.message} </p>`);
+         $('#' + data.guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${data.message} <i class="fz10"> (${formatMsgDate(new Date())})</i></p>`);
     });
 
     chat.on('someoneDisconected', function (data) {
@@ -112,7 +112,7 @@
     });
     
     chat.on('chatToAdmin', function (data) {
-        $('#' + data.guestId).find('.singleUserMsgList').prepend(`<p><b>${data.name}</b>: ${data.message} </p>`);
+        $('#' + data.guestId).find('.singleUserMsgList').prepend(`<p><b>${data.name}</b>: ${data.message} <i class="fz10"> (${formatMsgDate(new Date())})</i></p>`);
         if(!$('.' + data.guestId).hasClass('show')){
             var oldCount = $('.' + data.guestId).find('.msgCount').text()
             $('.' + data.guestId).find('.msgCount').text(1 + Number(oldCount))
@@ -123,8 +123,10 @@
     chat.on('setUserMessages', function (data) {
         var messages = data.msgs;
         var msgs = '';
-        messages.forEach(m => {
-            msgs += `<p><b>${m.name}</b>: ${m.text} </p>`
+        var extraLine = '';
+        var preFormat = null;
+        messages.forEach((m, index) => {
+            msgs += `${extraLine}<p><b>${m.name}</b>: ${m.text} <i class="fz10"> (${formatMsgDate(m.date)})</i> </p>`
         });
         $('.singleUserMsgList').html(`${msgs}`)
     });
@@ -135,4 +137,23 @@
         chat.emit('getUserMessages', { guestId: guestId });
     }
 
+    function formatMsgDate(msgdate){
+        var date = new Date(msgdate);
+        var monthNames = [
+            "January", "February", "March",
+            "April", "May", "June", "July",
+            "August", "September", "October",
+            "November", "December"
+        ];
+        var monthNamesShort = [
+            "Jan", "Feb", "Mar",
+            "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct",
+            "Nov", "Dec"
+        ];
+        var day = date.getDate();
+        var monthIndex = date.getMonth();
+        var year = date.getFullYear();
+        return day + ' ' + monthNamesShort[monthIndex] + ' ' + year;
+    }
 </script>

@@ -68,3 +68,10 @@
 .userIsActive{
   background-color: rgb(21, 194, 21);
 }
+.fz10{
+  font-size: 10px;
+}
+
+.borderBottom{
+  border-bottom: 1px solid #000;
+}
