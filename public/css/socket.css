@@ -8,6 +8,7 @@
   border-radius: .25rem;
   margin-bottom: 6px;
   padding: 3px;  
+  box-sizing: border-box;
 }
 .chatcontent button{
   width: 100%;
@@ -107,9 +108,9 @@
   margin-right: 2px;
 }
 .showChat{
+  float: right;
   width: 20%!important;
   display: inline-block;
-  float: right;
 }
 .namebox{
   display: none;

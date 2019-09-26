@@ -5,7 +5,8 @@
             Use this script under the domain you have registered your token
         </h3>
         <div class="card card-body mb-2">
-            <div>
+            <button class="btn btn-dark coptToken" onclick="copyTomTextById('copyToken')">Copy text</button>
+            <div id="copyToken">
               function loadScriptForChat(url, callback){<br>
                 &nbsp var script = document.createElement("script")<br>
                 &nbsp script.type = "text/javascript";<br>
@@ -24,7 +25,7 @@
                 &nbsp script.src = url;<br>
                 &nbsp document.getElementsByTagName("head")[0].appendChild(script);<br>
               }<br>
-              loadScriptForChat("{{ uri }}/external/socket.js", function(){<br>
+              loadScriptForChat("{{ uri }}/external/socket.min.js", function(){<br>
                 &nbsp initChat('{{ token }}', '{{ uri }}')<br>
               });<br>
             </div>
@@ -44,9 +45,27 @@
                     <input type="text" name="domain" class="form-control" required>
                 </div>
                 <input type="hidden" name="_method" value="PUT">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <button class="btn btn-dark" type="submit">Submit</button>
             </form>
        </div>
     </div>
   </div>
 {{/if}}
+
+<script>
+
+  function copyTomTextById(containerid) {
+    if (document.selection) { 
+        var range = document.body.createTextRange();
+        range.moveToElementText(document.getElementById(containerid));
+        range.select().createTextRange();
+        document.execCommand("copy"); 
+
+    } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(document.getElementById(containerid));
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+    }
+  }
+</script>

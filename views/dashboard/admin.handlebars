@@ -14,28 +14,36 @@
 
     chat.on('usersList', function (data) {
         let alredyExists = {}
+        let alredyAppend = [];
         $.each($('.singleUserListItem'), function (index, value) { 
             let id = $(this).attr('id')
             alredyExists[id] = id 
         });
-        $.each(data.allLoginUsers, function (k, v) {
-            if(alredyExists[k] != v.id && data.thisId != v.id && v.role != 'admin' && v.name != 'User'){
-                $('.userListPart').prepend(`
-                        <li class="nav-item">
-                            <a onclick="resetMsgCount(this)" class="nav-link ${v.id}" data-toggle="tab" href="#${v.id}">${v.name} <b><span class="msgCount"></span></b></a>
-                        </li>
-                `)
-                $('.userMessagePart').prepend(`
-                    <div id="${v.id}" class="singleUserListItem container tab-pane">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control messageInput">
-                            <div class="input-group-append">
-                                <button class="btn btn-dark sendUserMsg" type="submit">Send</button>
+        $.each(data.allLoginUsers, function (i, v) {
+            var guestId = v.guest_id;
+            if(alredyExists[guestId] != guestId && data.thisId != v.id && v.role != 'admin' && v.name != 'Myuser'){
+                if(!alredyAppend.includes(guestId)){
+                    alredyAppend.push(guestId)
+                    $('.userListPart').prepend(`
+                            <li class="nav-item">
+                                <a onclick="setMessagesAndResetMsgCount(this)" data-id="${v.guest_id}" class="userListItem nav-link ${v.guest_id}" data-toggle="tab" href="#${v.guest_id}">
+                                    <span class="isUserActive userIsActive"></span>
+                                    ${v.name} <b><span class="msgCount"></span></b>
+                                </a>
+                            </li>
+                    `)
+                    $('.userMessagePart').prepend(`
+                        <div id="${v.guest_id}" class="singleUserListItem container tab-pane">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control messageInput">
+                                <div class="input-group-append">
+                                    <button class="btn btn-dark sendUserMsg" type="submit">Send</button>
+                                </div>
                             </div>
+                            <div class="singleUserMsgList"></div>
                         </div>
-                        <div class="singleUserMsgList"></div>
-                    </div>
-                `)
+                    `)
+                }
             }
         })
     });
@@ -43,37 +51,88 @@
     $(document).on('keypress', '.messageInput',  function(e){
         if(e.which == 13){
             var message = $(this).val();
-            var chatroom = $(this).closest('.singleUserListItem').attr('id')
-            $('#' + chatroom).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
-            $('#' + chatroom).find('input').val('')
-            chat.emit('chatToUser', { message: message, chatroom: chatroom });
+            var guestId = $(this).closest('.singleUserListItem').attr('id')
+            $('#' + guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
+            $('#' + guestId).find('input').val('')
+            chat.emit('chatToUser', { message: message, guestId: guestId });
         }
     });
 
     $(document).on('click', '.sendUserMsg',  function(e){
         var input = $(this).closest('.input-group').find('input')
         var message = $(input).val();
-        var chatroom = $(this).closest('.singleUserListItem').attr('id')
-        $('#' + chatroom).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
-        $('#' + chatroom).find('input').val('')
-        chat.emit('chatToUser', { message: message, chatroom: chatroom });
+        var guestId = $(this).closest('.singleUserListItem').attr('id')
+        $('#' + guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${message} </p>`);
+        $('#' + guestId).find('input').val('')
+        chat.emit('chatToUser', { message: message, guestId: guestId });
+    });
+
+    chat.on('adminUserReconect', function (data) {
+        var elementExists = document.getElementById(data.guest_id);
+        if(elementExists){
+            $('.' + data.guest_id).find('.isUserActive ').addClass('userIsActive')
+        }else{
+            $('.userListPart').prepend(`
+                            <li class="nav-item">
+                                <a onclick="setMessagesAndResetMsgCount(this)" data-id="${data.guest_id}" class="userListItem nav-link ${data.guest_id}" data-toggle="tab" href="#${data.guest_id}">
+                                    <span class="isUserActive userIsActive"></span>
+                                    ${data.name} <b><span class="msgCount"></span></b>
+                                </a>
+                            </li>
+                    `)
+                    $('.userMessagePart').prepend(`
+                        <div id="${data.guest_id}" class="singleUserListItem container tab-pane">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control messageInput">
+                                <div class="input-group-append">
+                                    <button class="btn btn-dark sendUserMsg" type="submit">Send</button>
+                                </div>
+                            </div>
+                            <div class="singleUserMsgList"></div>
+                        </div>
+                    `)
+        }
+        
+    });
+
+    chat.on('anotherAdminMessage', function (data) {
+         $('#' + data.guestId).find('.singleUserMsgList').prepend(`<p><b>Admin</b>: ${data.message} </p>`);
     });
 
     chat.on('someoneDisconected', function (data) {
-        $('#' + data).remove()
-        $('.' + data).remove()
+        $('.' + data).find('.isUserActive ').removeClass('userIsActive')
+    });
+
+    chat.on('smthWentWrong', function () {
+        var txt;
+        var r = confirm("Somthing wrong with connection. Press Ok to reload page");
+        if (r == true) {
+            location.reload();
+        } 
     });
     
     chat.on('chatToAdmin', function (data) {
-        $('#' + data.chatroom).find('.singleUserMsgList').prepend(`<p><b>${data.name}</b>: ${data.message} </p>`);
-        if(!$('.' + data.chatroom).hasClass('show')){
-            var oldCount = $('.' + data.chatroom).find('.msgCount').text()
-            $('.' + data.chatroom).find('.msgCount').text(1 + Number(oldCount))
+        $('#' + data.guestId).find('.singleUserMsgList').prepend(`<p><b>${data.name}</b>: ${data.message} </p>`);
+        if(!$('.' + data.guestId).hasClass('show')){
+            var oldCount = $('.' + data.guestId).find('.msgCount').text()
+            $('.' + data.guestId).find('.msgCount').text(1 + Number(oldCount))
         }
     });
         
-    function resetMsgCount(obj){
+    
+    chat.on('setUserMessages', function (data) {
+        var messages = data.msgs;
+        var msgs = '';
+        messages.forEach(m => {
+            msgs += `<p><b>${m.name}</b>: ${m.text} </p>`
+        });
+        $('.singleUserMsgList').html(`${msgs}`)
+    });
+        
+    function setMessagesAndResetMsgCount(obj){
         $(obj).find('.msgCount').text('')
+        var guestId = $(obj).attr('data-id');
+        chat.emit('getUserMessages', { guestId: guestId });
     }
 
 </script>
