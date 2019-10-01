@@ -71,7 +71,9 @@
 .fz10{
   font-size: 10px;
 }
-
+.activeBotLabel{
+  cursor: pointer!important;
+}
 .borderBottom{
   border-bottom: 1px solid #000;
 }

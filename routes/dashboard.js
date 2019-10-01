@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const SlackBot = require('slackbots');
 const router = express.Router();
 const {ensureAuthenticaed} = require('../helpers/auth')
 
@@ -13,6 +14,8 @@ require('../models/User');
 const User = mongoose.model('users')
 require('../models/Token');
 const Token = mongoose.model('tokens')
+require('../models/Bot');
+const Bot = mongoose.model('bots')
 
 router.get('/', ensureAuthenticaed, (req, res) => {
     res.render('dashboard/index')
@@ -70,6 +73,122 @@ router.put('/token', (req, res) => {
                         })
                 })
     }
+})
+
+router.post('/bot', (req, res) => {
+    let errors = [];
+    if (req.body.name == '' || req.body.token == '' || req.body.channel == '') {
+        errors.push({ text: 'Not valid data' })
+    }
+    if (errors.length > 0) {
+        res.render('dashboard/bot', {
+            errors: errors,
+            name: req.body.name,
+            token: req.body.token,
+            channel: req.body.channel
+        })
+    } else {
+        const newBot = new Bot({
+            name: req.body.name.trim(),
+            bottoken: req.body.token.trim(),
+            channel: req.body.channel.trim(),
+            token: req.user.token,
+            user: req.user._id,
+            active: req.body.active == 'on' ? 1 : 0,
+        })
+        newBot.save() 
+                .then(bot1 => {
+                    var myBott1 = new SlackBot({
+                        token : bot1.bottoken.trim(),
+                        name : bot1.name.trim()
+                    })
+                    myBott1.on('error', function(data) {
+                        console.log(data);
+                        delete myBott1;
+                        req.flash('error_msg', 'Invalid data or problems with slack connection. If you are sure that your data is correct just try again after one miute');
+                        res.redirect('/dashboard/bot');
+                        return; 
+                    })
+                    myBott1.on('start', function(data) {
+                        myBott1.getChannel(bot1.channel)
+                                .then(channel => {
+                                        delete myBott1;
+                                    if (typeof channel == 'undefined') {
+                                        req.flash('error_msg', 'Channel dosen\'t exists');
+                                        res.redirect('/dashboard/bot');
+                                    }else{
+                                        req.flash('success_msg', 'Bot has been registered');
+                                        res.redirect('/dashboard/admin');
+                                    }
+                                })
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                    return;
+                })
+    }
+})
+
+
+router.put('/bot', (req, res) => {
+    let errors = [];
+    if (req.body.name == '' || req.body.token == '' || req.body.channel == '') {
+        errors.push({ text: 'Not valid data' })
+    }
+    if (errors.length > 0) {
+        res.render('dashboard/bot', {
+            errors: errors,
+            name: req.body.name,
+            token: req.body.token,
+            channel: req.body.channel
+        })
+    } else {
+        Bot.findOne({ user: req.user._id, token: req.user.token})
+            .then(bot => {
+                bot.name = req.body.name.trim(),
+                bot.bottoken = req.body.token.trim(),
+                bot.channel = req.body.channel.trim(),
+                bot.active = req.body.active == 'on' ? 1 : 0,
+                bot.save()
+                    .then(bot2 => {
+                        var myBott2 = new SlackBot({
+                            token : bot2.bottoken.trim(),
+                            name : bot2.name.trim()
+                        })
+                        myBott2.on('error', function(data) {
+                            delete myBott2;
+                            req.flash('error_msg', 'Invalid data or problems with slack connection. If you are sure that your data is correct just try again after one miute');
+                            res.redirect('/dashboard/bot');
+                            return; 
+                        })
+                        myBott2.on('start', function(data) {
+                            myBott2.getChannel(bot2.channel)
+                                    .then(channel => {
+                                            delete myBott2;
+                                        if (typeof channel == 'undefined') {
+                                            req.flash('error_msg', 'Channel dosen\'t exists');
+                                            res.redirect('/dashboard/bot');
+                                        }else{
+                                            req.flash('success_msg', 'Bot has been updated');
+                                            res.redirect('/dashboard/admin');
+                                        }
+                                    })
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        return;
+                    })
+            })
+    }
+})
+
+router.get('/bot', ensureAuthenticaed, (req, res) => {
+    Bot.findOne({ user: req.user._id, token: req.user.token})
+            .then(bot => {
+                res.render('dashboard/bot', {bot : bot})
+            })
 })
 
 module.exports = router;

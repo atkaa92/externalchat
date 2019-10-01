@@ -8,6 +8,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const methodOverride = require('method-override')
 const socket = require('socket.io');
+const { returnEqualOrNo } = require('./helpers/hbs');
 const app = express()
 
 //load routes
@@ -32,7 +33,10 @@ app.use((req, res, next) => {
 })
 
 //handlebars middleware
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
+app.engine('handlebars', exphbs({
+	helpers: { returnEqualOrNo: returnEqualOrNo },
+	defaultLayout: 'main'
+}));
 
 //set view engine
 app.set('view engine', 'handlebars');

@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col-md-6 mx-auto">
+      <div class="card card-body">
+          <h3 class="text-center">
+              Register Bot
+          </h3>
+            {{#if bot}}
+              <form action="/dashboard/bot?_method=PUT" method="post">
+            {{else}}
+              <form action="/dashboard/bot" method="post">
+            {{/if}}
+              <div class="form-group">
+                  <label>Bot name</label>
+                  <input type="text" name="name" value="{{#if bot}}{{bot.name}}{{/if}}"  class="form-control" required>
+              </div>
+              <div class="form-group">
+                  <label>Token</label>
+                  <input type="text" name="token" value="{{#if bot}}{{bot.bottoken}}{{/if}}" class="form-control" required>
+              </div>
+              <div class="form-group">
+                  <label>Channel name</label>
+                  <input type="text" name="channel"  value="{{#if bot}}{{bot.channel}}{{/if}}" class="form-control" required>
+              </div>
+              <div class="custom-control custom-checkbox mb-3 ">
+                <input type="checkbox" class="custom-control-input" {{returnEqualOrNo bot.active 1}}  id="activeBot" name="active">
+                <label class="custom-control-label activeBotLabel"  for="activeBot">Enabel or disable slack bot</label>
+              </div>
+              {{#if bot}}
+                <input type="hidden" name="_method" value="PUT">
+                <button class="btn btn-dark" type="submit">Update</button>
+              {{else}}
+                <button class="btn btn-dark" type="submit">Add</button>
+              {{/if}}
+          </form>
+      </div>
+  </div>
+</div>
+
+<script>
+
+</script>

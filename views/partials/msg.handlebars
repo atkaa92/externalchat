@@ -1,37 +1,43 @@
 {{#if success_msg}}
-    <div class="alert alert-success">
+    <div class="alert hideMsg alert-success">
         {{success_msg}}
     </div>
 {{/if}}
 
 {{#if error_msg}}
-    <div class="alert alert-danger">
+    <div class="alert hideMsg alert-danger">
         {{error_msg}}
     </div>
 {{/if}}
 
 {{#if info_msg}}
-    <div class="alert alert-info">
+    <div class="alert hideMsg alert-info">
         {{info_msg}}
     </div>
 {{/if}}
 
 {{#if warning_msg}}
-    <div class="alert alert-warning">
+    <div class="alert hideMsg alert-warning">
         {{warning_msg}}
     </div>
 {{/if}}
 
 {{#if error}}
-    <div class="alert alert-danger">
+    <div class="alert hideMsg alert-danger">
         {{error}}
     </div>
 {{/if}}
 
 {{#each errors}}
-    <div class="alert alert-danger">
+    <div class="alert hideMsg alert-danger">
         {{text}}
     </div>
 {{else}}
 
 {{/each}}
+
+<script>
+    setTimeout(function alertFunc() {
+        $(".hideMsg").hide();
+    }, 3000);
+</script>

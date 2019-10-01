@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
+const globconst = require('../config/globconst');
+const SlackBot = require('slackbots');
+
 require('../models/Token');
 require('../models/Message');
+require('../models/Bot');
 const Token = mongoose.model('tokens')
 const Message = mongoose.model('messages')
+const Bot = mongoose.model('bots')
 var allLoginUsers = {};
 
 Array.prototype.arr_remove = function() {
@@ -19,6 +24,74 @@ Array.prototype.arr_remove = function() {
 module.exports = (function (io) {
     io.of('/chat').
     on('connection', function (socket) {
+            Bot.findOne({ token : socket.handshake.query.token})
+                .then(bott => {
+                    if(bott){ 
+                        if (typeof myBot == 'undefined') {
+                            myBot = new SlackBot({
+                                token : bott.bottoken,
+                                name : bott.name
+                            })
+                            myBot.on('error', function(data) {
+                                delete  myBot;
+                                return; 
+                            })
+                            myBot.on('message', function(data) {
+                                if (data.type == 'message' && data.subtype != 'bot_message') {
+                                    let text = data.text;
+                                    var myRegexp = /\(@*[a-z A-Z 0-9]*\)/;
+                                    var match = myRegexp.exec(text);
+                                    if (match) {
+                                        var guestId = match[0];
+                                        text = text.replace(guestId, '')
+                                        var myRegexp1 = /<@*[a-z A-Z 0-9]*>/;
+                                        var match1 = myRegexp1.exec(text);
+                                        text = text.replace(match1 ? match1[0] : '', '');
+                                        guestId = guestId.replace('(@', '').replace(')', '').trim();
+                                        let token = allLoginUsers['guests'][guestId]['token'];
+                                        Bot.findOne({ token : token})
+                                            .then(bott => {
+                                                if(bott && bott.active == 1){
+                                                    let data1 = {
+                                                        'guestId' : guestId,
+                                                        'message' : text,
+                                                    }
+                                                    const newMessage = {
+                                                        guest_id: data1.guestId,
+                                                        token: token,
+                                                        name: 'Admin',
+                                                        text: data1['message']
+                                                    }
+                                                    new Message(newMessage)
+                                                        .save()
+                                                        .then(message => {
+                                                            clients = io.of('/chat').clients();
+                                                            conClients = clients.connected
+                                                            for (var p in conClients) {
+                                                                if (typeof allLoginUsers[conClients[p].client.id] != 'undefined') {
+                                                                    if (allLoginUsers[conClients[p].client.id]['guest_id'] == data1.guestId && allLoginUsers[conClients[p].client.id]['token'] == token) {
+                                                                        conClients[p].emit('adminChatToUser', data1);
+                                                                    }
+                                                                    if ( allLoginUsers[conClients[p].client.id]['role'] == 'admin' && allLoginUsers[conClients[p].client.id]['token'] == token) {
+                                                                        conClients[p].emit('anotherAdminMessage', data1);
+                                                                    }
+                                                                }else{
+                                                                    conClients[p].emit('smthWentWrong');
+                                                                }
+                                                            }
+                                                        })
+                                                }
+                                            })
+                                    }else{
+                                        return
+                                    }
+                                }else{
+                                    return;
+                                }
+                            });
+                        }
+                    }
+                }) 
         var token = socket.handshake.query.token;
         var role = (socket.handshake.headers.referer.indexOf("dashboard/admin") > -1) ? 'admin' : 'user';
         var name = (socket.handshake.headers.referer.indexOf("dashboard/admin") > -1) ? 'Admin' : 'Myuser';
@@ -195,7 +268,7 @@ module.exports = (function (io) {
                         socket.emit('setUserMessages', { msgs : messages})
                     })
         });
-
+ 
         socket.on('chatToAdmin', function (data) {
             const newMessage = {
                 guest_id: data['guestId'],
@@ -203,6 +276,77 @@ module.exports = (function (io) {
                 name: allLoginUsers['guests'][data['guestId']]['name'],
                 text: data['message']
             }
+            Bot.findOne({ token : allLoginUsers['guests'][data['guestId']]['token']})
+                .then(bott => {
+                    if(bott && bott.active == 1){ 
+                        if (typeof myBot == 'undefined') {
+                            myBot = new SlackBot({
+                                token : bott.bottoken,
+                                name : bott.name
+                            })
+                            myBot.on('error', function(data) {
+                                delete  myBot;
+                                return; 
+                            })
+                            myBot.on('message', function(data) {
+                                if (data.type == 'message' && data.subtype != 'bot_message') {
+                                    let text = data.text;
+                                    var myRegexp = /\(@*[a-z A-Z 0-9]*\)/;
+                                    var match = myRegexp.exec(text);
+                                    if (match) {
+                                        var guestId = match[0];
+                                        text = text.replace(guestId, '')
+                                        var myRegexp1 = /<@*[a-z A-Z 0-9]*>/;
+                                        var match1 = myRegexp1.exec(text);
+                                        text = text.replace(match1 ? match1[0] : '', '');
+                                        guestId = guestId.replace('(@', '').replace(')', '').trim();
+                                        let token = allLoginUsers['guests'][guestId]['token'];
+                                        Bot.findOne({ token : token})
+                                            .then(bott => {
+                                                if(bott && bott.active == 1){
+                                                    let data1 = {
+                                                        'guestId' : guestId,
+                                                        'message' : text,
+                                                    }
+                                                    const newMessage = {
+                                                        guest_id: data1.guestId,
+                                                        token: token,
+                                                        name: 'Admin',
+                                                        text: data1['message']
+                                                    }
+                                                    new Message(newMessage)
+                                                        .save()
+                                                        .then(message => {
+                                                            clients = io.of('/chat').clients();
+                                                            conClients = clients.connected
+                                                            for (var p in conClients) {
+                                                                if (typeof allLoginUsers[conClients[p].client.id] != 'undefined') {
+                                                                    if (allLoginUsers[conClients[p].client.id]['guest_id'] == data1.guestId && allLoginUsers[conClients[p].client.id]['token'] == token) {
+                                                                        conClients[p].emit('adminChatToUser', data1);
+                                                                    }
+                                                                    if ( allLoginUsers[conClients[p].client.id]['role'] == 'admin' && allLoginUsers[conClients[p].client.id]['token'] == token) {
+                                                                        conClients[p].emit('anotherAdminMessage', data1);
+                                                                    }
+                                                                }else{
+                                                                    conClients[p].emit('smthWentWrong');
+                                                                }
+                                                            }
+                                                        })
+                                                }
+                                            })
+                                    }else{
+                                        return
+                                    }
+                                }else{
+                                    return;
+                                }
+                            });
+                            myBot.postMessageToChannel( bott.channel, `${allLoginUsers['guests'][data['guestId']]['name']} - ${data['message']} (@${data['guestId']})`, { icon_emoji: globconst.botemoji });
+                        }else{
+                            myBot.postMessageToChannel( bott.channel, `${allLoginUsers['guests'][data['guestId']]['name']} - ${data['message']} (@${data['guestId']})`, { icon_emoji: globconst.botemoji });
+                        }
+                    }
+                })
             new Message(newMessage)
                 .save()
                 .then(message => {
