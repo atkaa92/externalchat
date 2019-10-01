@@ -10,15 +10,15 @@
               <form action="/dashboard/bot" method="post">
             {{/if}}
               <div class="form-group">
-                  <label>Bot name</label>
+                  <label>Bot name <small>(The same name as in slack app)</small></label>
                   <input type="text" name="name" value="{{#if bot}}{{bot.name}}{{/if}}"  class="form-control" required>
               </div>
               <div class="form-group">
-                  <label>Token</label>
+                  <label>Token <small>('Bot User OAuth Access Token' from 'OAuth & Permissions' section)</small></label>
                   <input type="text" name="token" value="{{#if bot}}{{bot.bottoken}}{{/if}}" class="form-control" required>
               </div>
               <div class="form-group">
-                  <label>Channel name</label>
+                  <label>Channel name <small>(Channl name where your slack bot is assigned)</small></label>
                   <input type="text" name="channel"  value="{{#if bot}}{{bot.channel}}{{/if}}" class="form-control" required>
               </div>
               <div class="custom-control custom-checkbox mb-3 ">
